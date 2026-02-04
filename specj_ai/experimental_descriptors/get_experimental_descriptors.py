@@ -3,16 +3,21 @@ from typing import List, Dict
 
 import logging
 
+ABSORPTION_MAX = "Absorption max (eV)"
+EMMISION_MAX = "Emission max (eV)"
+STOKES_SHIFT = "Stokes shift (eV)"
+ABS_COEFFICIENT = "log(e/mol-1 dm3 cm-1)"
+
 
 class ExperimentalDescriptors:
 
     def __init__(self):
 
         self.experimental_descriptors = {
-            "Absorption max (eV)": [None],
-            "Emission max (eV)": [None],
-            "Stokes shift (eV)": [None],
-            "log(e/mol-1 dm3 cm-1)": [None],
+            ABSORPTION_MAX: [None],
+            EMMISION_MAX: [None],
+            STOKES_SHIFT: [None],
+            ABS_COEFFICIENT: [None],
         }
 
     def calculate_stokes_shift(self) -> List[float]:
@@ -21,8 +26,8 @@ class ExperimentalDescriptors:
         Returns:
             list[float]: List containing the calculated stokes shift
         """
-        absorption_max = self.experimental_descriptors["Absorption max (eV)"][0]
-        emmision_max = self.experimental_descriptors["Emission max (eV)"][0]
+        absorption_max = self.experimental_descriptors[ABSORPTION_MAX][0]
+        emmision_max = self.experimental_descriptors[EMMISION_MAX][0]
         stokes_shift = abs(emmision_max - absorption_max)
         return [stokes_shift]
 
@@ -41,18 +46,16 @@ class ExperimentalDescriptors:
 
         experimental_descriptors_df = DataFrame.from_dict(self.experimental_descriptors)
 
-        absorption_input = experimental_input["Absorption max (eV)"]
-        emmision_input = experimental_input["Emission max (eV)"]
-        loge_input = experimental_input["log(e/mol-1 dm3 cm-1)"]
+        absorption_input = experimental_input[ABSORPTION_MAX]
+        emmision_input = experimental_input[EMMISION_MAX]
+        loge_input = experimental_input[ABS_COEFFICIENT]
 
         if absorption_input and emmision_input and loge_input:
 
-            self.experimental_descriptors["Absorption max (eV)"] = absorption_input
-            self.experimental_descriptors["Emission max (eV)"] = emmision_input
-            self.experimental_descriptors["Stokes shift (eV)"] = (
-                self.calculate_stokes_shift()
-            )
-            self.experimental_descriptors["log(e/mol-1 dm3 cm-1)"] = loge_input
+            self.experimental_descriptors[ABSORPTION_MAX] = absorption_input
+            self.experimental_descriptors[EMMISION_MAX] = emmision_input
+            self.experimental_descriptors[STOKES_SHIFT] = self.calculate_stokes_shift()
+            self.experimental_descriptors[ABS_COEFFICIENT] = loge_input
             experimental_descriptors_df = DataFrame.from_dict(
                 self.experimental_descriptors
             )
